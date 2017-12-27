@@ -22,9 +22,24 @@ def clean_phone_numbers(phone_number)
 end
 
 def date_time_parser(regdate)
-  require 'pry' ; binding.pry
-  date = DateTime.new(regdate)
-  date.strptime("%Y-%m-%dT%H:%M:%S")
+  date = DateTime.strptime(regdate, "%m/%d/%y %H:%M")
+end
+
+def hours(date)
+  date.hour
+end
+
+def weekday(date)
+  weekdays = {
+    0 => "Sunday",
+    1 => "Monday",
+    2 => "Tuesday",
+    3 => "Wednesday",
+    4 => "Thursday",
+    5 => "Friday",
+    6 => "Saturday"
+  }
+  weekdays[date.wday]
 end
 
 def legislators_by_zipcode(zip)
@@ -62,9 +77,10 @@ contents.each do |row|
   name = row[:first_name]
   zipcode = clean_zipcode(row[:zipcode])
   phonenumber = clean_phone_numbers(row[:homephone])
-  regdate = date_time_parser(row[:regdate])
-  p "#{regdate}"
-  #legislators = legislators_by_zipcode(zipcode)
-  #form_letter = erb_template.result(binding)
-  #save_thank_you_letters(id, form_letter)
+  date = date_time_parser(row[:regdate])
+  hour = hours(date)
+  weekday = weekday(date)
+  legislators = legislators_by_zipcode(zipcode)
+  form_letter = erb_template.result(binding)
+  save_thank_you_letters(id, form_letter)
 end
